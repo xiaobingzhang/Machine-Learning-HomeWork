@@ -23,6 +23,26 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+result = zeros(size(C,1)*size(sigma,1),1);
+
+Cs = [0.01; 0.03; 0.1; 0.3 ; 1; 3; 10; 30];
+sigmas =  [0.01; 0.03; 0.1; 0.3 ; 1; 3; 10; 30];
+idx = 1;
+for i = 1:size(Cs),
+    for j = 1:size(sigmas),
+        C = Cs(i);
+        sigma = sigmas(j);
+        model = svmTrain(X,y,C,@(x1,x2)gaussianKernel(x1,x2,sigma));
+        predictions = svmPredict(model, Xval);
+        result(idx) = mean(double(predictions ~= yval));
+        idx = idx + 1;
+    end;
+end;
+
+[~,idx] = min(result);
+C = Cs(floor((idx-1)/size(Cs,1)+1));
+sigma =sigmas(mod(idx-1,size(Cs,1))+1);
+        
 
 
 
